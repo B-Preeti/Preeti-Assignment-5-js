@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .edit-column {
+            background-color: lightskyblue;
+        }
+        .delete-column {
+            background-color: red;
+        }
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .edit-buttons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        .edit-buttons .edit {
+            color: blue;
+        }
+        .edit-buttons .save {
+            color: white;
+            background-color: green;
+        }
+        .edit-buttons .delete {
+            color: red;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        form input, form select, form button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        form button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>View Users</h2>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>State</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h2>Add Users</h2>
+        <form id="addUserForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="number" id="age" placeholder="Age" required>
+            <select id="state" required>
+                <option value="" disabled selected>State</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+            </select>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+
+    <script>
+        let users = [
+            { name: 'Hari', age: 35, state: 'Delhi' },
+            { name: 'Hari', age: 23, state: 'Karnataka' },
+            { name: 'Rajiv', age: 42, state: 'Ladakh' },
+            { name: 'Priya', age: 25, state: 'Kashmir' },
+            { name: 'Vasu', age: 16, state: 'Bihar' }
+        ];
+
+        function loadUsers() {
+            const tableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            users.forEach((user, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.age}</td>
+                    <td>${user.state}</td>
+                    <td class="edit-column">
+                        <div class="edit-buttons">
+                            <button class="edit" onclick="editUser(${index})">&#x270E;</button>
+                            <button class="save" style="display: none;" onclick="saveUser(${index})">&#x2714;</button>
+                        </div>
+                    </td>
+                    <td class="delete-column">
+                        <button class="delete" onclick="deleteUser(${index})">&#x1F5D1;</button>
+                    </td>
+                `;
+            });
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const state = document.getElementById('state').value;
+
+            users.push({ name, age, state });
+            loadUsers();
+            this.reset();
+        });
+
+        function editUser(index) {
+            const user = users[index];
+            const row = document.getElementById('userTable').rows[index + 1];
+            row.innerHTML = `
+                <td><input type="text" value="${user.name}" id="edit-name-${index}"></td>
+                <td><input type="number" value="${user.age}" id="edit-age-${index}"></td>
+                <td>
+                    <select id="edit-state-${index}">
+                        <option value="Andhra Pradesh" ${user.state === 'Andhra Pradesh' ? 'selected' : ''}>Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh" ${user.state === 'Arunachal Pradesh' ? 'selected' : ''}>Arunachal Pradesh</option>
+                        <option value="Assam" ${user.state === 'Assam' ? 'selected' : ''}>Assam</option>
+                        <option value="Bihar" ${user.state === 'Bihar' ? 'selected' : ''}>Bihar</option>
+                        <option value="Chhattisgarh" ${user.state === 'Chhattisgarh' ? 'selected' : ''}>Chhattisgarh</option>
+                        <option value="Goa" ${user.state === 'Goa' ? 'selected' : ''}>Goa</option>
+                        <option value="Gujarat" ${user.state === 'Gujarat' ? 'selected' : ''}>Gujarat</option>
+                        <option value="Haryana" ${user.state === 'Haryana' ? 'selected' : ''}>Haryana</option>
+                        <option value="Himachal Pradesh" ${user.state === 'Himachal Pradesh' ? 'selected' : ''}>Himachal Pradesh</option>
+                        <option value="Jharkhand" ${user.state === 'Jharkhand' ? 'selected' : ''}>Jharkhand</option>
+                        <option value="Karnataka" ${user.state === 'Karnataka' ? 'selected' : ''}>Karnataka</option>
+                        <option value="Kerala" ${user.state === 'Kerala' ? 'selected' : ''}>Kerala</option>
+                        <option value="Madhya Pradesh" ${user.state === 'Madhya Pradesh' ? 'selected' : ''}>Madhya Pradesh</option>
+                        <option value="Maharashtra" ${user.state === 'Maharashtra' ? 'selected' : ''}>Maharashtra</option>
+                        <option value="Manipur" ${user.state === 'Manipur' ? 'selected' : ''}>Manipur</option>
+                        <option value="Meghalaya" ${user.state === 'Meghalaya' ? 'selected' : ''}>Meghalaya</option>
+                        <option value="Mizoram" ${user.state === 'Mizoram' ? 'selected' : ''}>Mizoram</option>
+                        <option value="Nagaland" ${user.state === 'Nagaland' ? 'selected' : ''}>Nagaland</option>
+                        <option value="Odisha" ${user.state === 'Odisha' ? 'selected' : ''}>Odisha</option>
+                        <option value="Punjab" ${user.state === 'Punjab' ? 'selected' : ''}>Punjab</option>
+                        <option value="Rajasthan" ${user.state === 'Rajasthan' ? 'selected' : ''}>Rajasthan</option>
+                        <option value="Sikkim" ${user.state === 'Sikkim' ? 'selected' : ''}>Sikkim</option>
+                        <option value="Tamil Nadu" ${user.state === 'Tamil Nadu' ? 'selected' : ''}>Tamil Nadu</option>
+                        <option value="Telangana" ${user.state === 'Telangana' ? 'selected' : ''}>Telangana</option>
+                        <option value="Tripura" ${user.state === 'Tripura' ? 'selected' : ''}>Tripura</option>
+                        <option value="Uttar Pradesh" ${user.state === 'Uttar Pradesh' ? 'selected' : ''}>Uttar Pradesh</option>
+                        <option value="Uttarakhand" ${user.state === 'Uttarakhand' ? 'selected' : ''}>Uttarakhand</option>
+                        <option value="West Bengal" ${user.state === 'West Bengal' ? 'selected' : ''}>West Bengal</option>
+                    </select>
+                </td>
+                <td class="edit-column">
+                    <div class="edit-buttons">
+                        <button class="save" onclick="saveUser(${index})">&#x2714;</button>
+                        <button onclick="cancelEdit(${index})">Cancel</button>
+                    </div>
+                </td>
+                <td class="delete-column">
+                    <button class="delete" onclick="deleteUser(${index})">&#x1F5D1;</button>
+                </td>
+            `;
+        }
+
+        function saveUser(index) {
+            const name = document.getElementById(`edit-name-${index}`).value;
+            const age = document.getElementById(`edit-age-${index}`).value;
+            const state = document.getElementById(`edit-state-${index}`).value;
+
+            users[index] = { name, age, state };
+            loadUsers();
+        }
+
+        function cancelEdit(index) {
+            loadUsers();
+        }
+
+        function deleteUser(index) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                users.splice(index, 1);
+                loadUsers();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>
